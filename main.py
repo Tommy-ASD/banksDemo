@@ -1,3 +1,6 @@
+from multiprocessing.sharedctypes import Value
+
+
 assets = []
 wallets = []
 amounts = []
@@ -79,9 +82,12 @@ class asset:
         # make sure caller id is owner
         if callerID == self.owner:
             global wallets
-            self.newOwner = wallets[
-                int(input("What wallet should be the new owner?\n"))
-            ]
+            try:
+                self.newOwner = wallets[
+                    int(input("What wallet should be the new owner?\n"))
+                ]
+            except IndexError:
+                print(f"Could not find wallet")
             self.cmd = input(
                 f"Are you sure you want to change owner of {self.name} ({self.ticker}) from {self.owner} to {self.newOwner}? (Yes = True/No = False)\n"
             )
@@ -102,9 +108,18 @@ class asset:
         self.amount = int(input(f"How many of {self.name} do you want to create?\n"))
 
     def readData(self):
-        print(f"Name: {self.name}\n")
-        print(f"Ticker: {self.ticker}\n")
-        print(f"Amount: {self.amount}\n")
+        print(
+            f"""
+        Name: {self.name}\n")
+        Ticker: {self.ticker}
+        Amount: {self.amount}\n
+        Holders:
+        """
+        )
+        for i in range(len(self.holders)):
+            print(
+                f"Holder {self.holders[i].address} with {self.holderAmounts[i]} {self.name}"
+            )
 
     def changeHolders(self, callerID):
         cmd = int(
@@ -144,27 +159,48 @@ class asset:
 
 
 class LP:
-    def __init__(self):
+    def __init__(self, asset1ID, asset2ID):
         # give 2 assets
+        #   asset ID
+        #   asset amount?
         # this will be used for trading 2 assets in what is known as a "liquidity pool"
         # search it up for more
         # https://www.youtube.com/watch?v=dVJzcFDo498&
+
         pass
 
 
 def main():
     while True:
-        cmd = int(
-            input(
-                "What do you want to do?\n 1. Create new wallet\n 2. Use existing wallet\n"
+        try:
+            # inoptimal?
+            # not sure about performance specs
+            # try to find better way
+            cmd = int(
+                input(
+                    "What do you want to do?\n 1. Create new wallet\n 2. Use existing wallet\n"
+                )
             )
-        )
-        if cmd == 1:
-            wallets.append(wallet())
-            print(wallets)
-        elif cmd == 2:
-            cmd = int(input("What wallet do you want to use?\n"))
-            wallets[cmd].interact()
+            if cmd == 1:
+                wallets.append(wallet())
+                print(wallets)
+            elif cmd == 2:
+                try:
+                    cmd = int(input("What wallet do you want to use?\n"))
+                    try:
+                        wallets[cmd].interact()
+                    except IndexError:
+                        print(f"Wallet number {cmd} does not exist")
+                    finally:
+                        print("Unknown error, please try again")
+                except ValueError:
+                    print("Please input a whole number")
+                finally:
+                    print("Unknown error, please try again")
+            else:
+                print("Please enter one of the provided options")
+        except ValueError:
+            print("Please enter one of the provided options")
 
 
 main()
