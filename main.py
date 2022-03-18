@@ -125,12 +125,10 @@ class asset:
         if len(self.holders) != len(wallets):
             print("updating wallets")
             for i in range(len(wallets)):
-                if self.holders == i:
-                    print(f"holder {i} exists")
-                    pass
-                else:
-                    self.holders.append(i)
-                    print(f"added holder {i}")
+                try:
+                    self.holders[i]
+                except IndexError:
+                    self.holders.append(wallets[i])
         if len(self.holderAmounts) != len(wallets):
             # if not all wallets are accounted for in holderAmounts var
             print("updating wallets")
@@ -141,7 +139,6 @@ class asset:
                 # plans forward: if trying to send assets to non-existing holder number, create holder number
                 try:
                     self.holderAmounts[i]
-                    print(f"added holder {i}")
                 except IndexError:
                     self.holderAmounts.append(0)
 
@@ -151,7 +148,7 @@ class LP:
         # give 2 assets
         # this will be used for trading 2 assets in what is known as a "liquidity pool"
         # search it up for more
-
+        # https://www.youtube.com/watch?v=dVJzcFDo498&
         pass
 
 
