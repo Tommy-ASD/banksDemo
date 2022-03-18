@@ -23,10 +23,10 @@ class wallet:
         )
         if cmd == 1:
             # pass self.address in as owner
-            assets.append(asset(self))
+            assets.append(asset(self.address))
         elif cmd == 2:
             # passing "self" argument as callerID, to ensure only owner can make changes to OnlyOwner functions
-            assets[int(input("Input asset ID\n"))].interact(self)
+            assets[int(input("Input asset ID\n"))].interact(self.address)
         elif cmd == 3:
             pass
 
@@ -44,13 +44,24 @@ class asset:
                 "Enter how many of the new asset should be created? (This will be deposited to your wallet).\n"
             )
         )
+        print(addressID)
         self.owner = addressID
         # idk why i want this, i just do
         self.previousOwners = []
         # in case you want multiple admins
         self.admins = []
-        self.holders = [addressID]
-        self.holdersAmounts = [self.amount]
+        # how to add make better?
+        # create function to handle holders (not ideal)
+        # store assets in wallets (not ideal)
+        # how to store wallet address, asset id and asset amount in one?
+        # i can only think of adding 2 arrays
+        self.holders = []
+        self.holderAmounts = []
+        for i in range(len(wallets)):
+            self.holders.append(wallets[i])
+        for i in range(len(self.holders)):
+            self.holderAmounts.append(0)
+        self.holderAmounts[addressID] += self.amount
         # create ID based on amount of assets before it
         self.id = assetsAmount
         # to ensure each asset has a unique id, i update assetsAmount after each new asset
@@ -60,6 +71,7 @@ class asset:
     def interact(self, callerID):
         self.readData()
         # add more choices
+        self.changeHolders(callerID)
         self.changeOwner(callerID)
 
     def changeOwner(self, callerID):
@@ -92,6 +104,21 @@ class asset:
         print(f"Name: {self.name}\n")
         print(f"Ticker: {self.ticker}\n")
         print(f"Amount: {self.amount}\n")
+
+    def changeHolders(self, callerID):
+        cmd = int(
+            input(
+                f"""What do you want to do with wallet {callerID}'s '{self.name}, ({self.ticker})'?\n 
+    This wallet holds {self.holderAmounts[callerID]} {self.ticker}.\n"""
+            )
+        )
+        match cmd:
+            case 1:
+                transferAmount = int(input("how much do you want to transfer?"))
+                transferredTo = int(input("what wallet do you want to transfer to?"))
+                self.holderAmounts[callerID] -= transferAmount
+                self.holderAmounts[transferredTo] += transferAmount
+        pass
 
 
 class LP:
