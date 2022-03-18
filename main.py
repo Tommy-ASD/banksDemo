@@ -71,6 +71,7 @@ class asset:
     def interact(self, callerID):
         self.readData()
         # add more choices
+        self.updateWallets()
         self.changeHolders(callerID)
         self.changeOwner(callerID)
 
@@ -118,7 +119,31 @@ class asset:
                 transferredTo = int(input("what wallet do you want to transfer to?"))
                 self.holderAmounts[callerID] -= transferAmount
                 self.holderAmounts[transferredTo] += transferAmount
-        pass
+
+    def updateWallets(self):
+        global wallets
+        if len(self.holders) != len(wallets):
+            print("updating wallets")
+            for i in range(len(wallets)):
+                if self.holders == i:
+                    print(f"holder {i} exists")
+                    pass
+                else:
+                    self.holders.append(i)
+                    print(f"added holder {i}")
+        if len(self.holderAmounts) != len(wallets):
+            # if not all wallets are accounted for in holderAmounts var
+            print("updating wallets")
+            for i in range(len(self.holders)):
+                # if self.holderAmounts[i] exists, don't do anything
+                # with error "IndexError", add a new index to holdersAmount
+                # not ideal, creates more holders than there are wallets. when wallet created, it keeps assets
+                # plans forward: if trying to send assets to non-existing holder number, create holder number
+                try:
+                    self.holderAmounts[i]
+                    print(f"added holder {i}")
+                except IndexError:
+                    self.holderAmounts.append(0)
 
 
 class LP:
