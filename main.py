@@ -86,19 +86,26 @@ class asset:
                 self.newOwner = wallets[
                     int(input("What wallet should be the new owner?\n"))
                 ]
+                self.cmd = input(
+                    f"Are you sure you want to change owner of {self.name} ({self.ticker}) from {self.owner} to {self.newOwner}? (Yes = True/No = False)\n"
+                )
+                try:
+                    if self.cmd:
+                        # to record all previous owners
+                        self.previousOwners.append(self.owner)
+                        self.owner = self.newOwner
+                    else:
+                        print("Answered no, going back to interaction menu")
+                        # return back to interact function
+                        self.interact(self, callerID)
+                except ValueError:
+                    print("Please only input one of the provided option")
             except IndexError:
-                print(f"Could not find wallet")
-            self.cmd = input(
-                f"Are you sure you want to change owner of {self.name} ({self.ticker}) from {self.owner} to {self.newOwner}? (Yes = True/No = False)\n"
-            )
-            if self.cmd:
-                # to record all previous owners
-                self.previousOwners.append(self.owner)
-                self.owner = self.newOwner
-            else:
-                print("Answered no, going back to interaction menu")
-                # return back to interact function
-                self.interact(self, callerID)
+                print("Could not find wallet")
+            except ValueError:
+                print("Please input a whole number")
+            finally:
+                print("Unknown error when finding new owner wallet number")
 
         else:
             print("You are not the owner of this asset")
