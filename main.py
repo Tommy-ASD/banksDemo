@@ -18,19 +18,73 @@ class wallet:
         self.address = addressAmount
         addressAmount += 1
         print("created wallet")
+        self.pin = None
+        self.newPin = int
+        self.activated = False
 
-    def interact(self):
+    def login(self):
+        if self.activated:
+            self.loginPin()
+        else:
+            self.createPin()
+
+    def createPin(self):
+        print(
+            "Please choose a pin code for this account. The pin should be between 4 and 8 digits. If you no longer wish to choose this account, enter the number 0"
+        )
+        try:
+            self.newPin = int(input())
+            if len(str(self.newPin)) >= 4 and len(str(self.newPin)) <= 8:
+                print("Please confirm your pin")
+                self.pinConf = int(input())
+                if self.newPin == self.pinConf:
+                    self.pin = self.newPin
+                    print("Pin successfully created!")
+                    self.activated = True
+                    self.cmd()
+                elif self.newPin == 0:
+                    pass
+                else:
+                    print("Please input the same number")
+                    self.createPin()
+            else:
+                print("Not within 4 and 8 integers")
+                self.createPin()
+        except ValueError:
+            print("You did not enter an integer")
+            self.createPin()
+
+    def loginPin(self):
+        print(
+            "Please enter your Pin code. If you no longer wish to log into this account, enter the number 0."
+        )
+        try:
+            self.inPin = int(input())
+            if self.inPin == self.pin:
+                self.cmd()
+            elif self.inPin == 0:
+                print("Successfully exited account login")
+            else:
+                print("Wrong pin, please try again")
+                self.loginPin()
+        except ValueError:
+            print("You did not enter an integer")
+            self.loginPin()
+
+    def cmd(self):
         print(wallets)
         cmd = int(
-            input("What do you want to do?\n 1. Create asset\n 2. Change asset stats\n")
+            input(
+                "What do you want to do?\n 1. Create asset\n 2. Change asset stats\nSimply press enter to log out\n"
+            )
         )
         if cmd == 1:
             # pass self.address in as owner
             assets.append(asset(self.address))
         elif cmd == 2:
-            # passing "self" argument as callerID, to ensure only owner can make changes to OnlyOwner functions
+            # passing "self" argument as msgSender, to ensure only owner can make changes to OnlyOwner functions
             assets[int(input("Input asset ID\n"))].interact(self.address)
-        elif cmd == 3:
+        elif cmd == None:
             pass
 
 
@@ -69,18 +123,22 @@ class asset:
         self.id = assetsAmount
         # to ensure each asset has a unique id, i update assetsAmount after each new asset
         assetsAmount += 1
+        # approvals will be handled by a multidimensional array
+        # approvals[i] will be the wallet
+        # approvals[i][j] will be the wallets this wallet has approved
+        # approvals[i][j][y] will be the amount approved
+        self.approvals = []
         print(f"New asset number = {self.id}\n")
 
-    def interact(self, callerID):
+    def interact(self, msgSender):
         self.readData()
         # add more choices
-        self.updateWallets()
-        self.changeHolders(callerID)
-        self.changeOwner(callerID)
+        self.transfer(msgSender)
+        self.transferOwnership(msgSender)
 
-    def changeOwner(self, callerID):
+    def transferOwnership(self, msgSender):
         # make sure caller id is owner
-        if callerID == self.owner:
+        if msgSender == self.owner:
             global wallets
             try:
                 self.newOwner = wallets[
@@ -97,7 +155,7 @@ class asset:
                     else:
                         print("Answered no, going back to interaction menu")
                         # return back to interact function
-                        self.interact(self, callerID)
+                        self.interact(self, msgSender)
                 except ValueError:
                     print("Please only input one of the provided option")
             except IndexError:
@@ -110,11 +168,12 @@ class asset:
         else:
             print("You are not the owner of this asset")
 
-    def createMore(self):
+    def mint(self):
         print(f"Current amount is of asset number {self.id} is {self.amount}\n")
         self.amount = int(input(f"How many of {self.name} do you want to create?\n"))
 
     def readData(self):
+        self.updateWallets()
         print(
             f"""
         Name: {self.name}\n")
@@ -128,19 +187,26 @@ class asset:
                 f"Holder {self.holders[i].address} with {self.holderAmounts[i]} {self.name}"
             )
 
-    def changeHolders(self, callerID):
+    def transfer(self, msgSender):
         cmd = int(
             input(
-                f"""What do you want to do with wallet {callerID}'s '{self.name}, ({self.ticker})'?\n 
-    This wallet holds {self.holderAmounts[callerID]} {self.ticker}.\n"""
+                f"""What do you want to do with wallet {msgSender}'s '{self.name}, ({self.ticker})'?\n 
+    This wallet holds {self.holderAmounts[msgSender]} {self.ticker}.\n"""
             )
         )
         match cmd:
             case 1:
                 transferAmount = int(input("how much do you want to transfer?"))
-                transferredTo = int(input("what wallet do you want to transfer to?"))
-                self.holderAmounts[callerID] -= transferAmount
-                self.holderAmounts[transferredTo] += transferAmount
+                receiver = int(input("what wallet do you want to transfer to?"))
+                self.holderAmounts[msgSender] -= transferAmount
+                self.holderAmounts[receiver] += transferAmount
+
+    def approve(self, msgSender):
+        global wallets
+        # unorderly
+        # structs or mappings (like in Solidity) would come in handy
+        approval = int(input("What wallet do you want to approve?"))
+        amount = int(input("How much do you want to approve this for?"))
 
     def updateWallets(self):
         global wallets
@@ -195,15 +261,15 @@ def main():
                 try:
                     cmd = int(input("What wallet do you want to use?\n"))
                     try:
-                        wallets[cmd].interact()
+                        wallets[cmd].login()
                     except IndexError:
                         print(f"Wallet number {cmd} does not exist")
                     finally:
-                        print("Unknown error, please try again")
+                        pass
                 except ValueError:
                     print("Please input a whole number")
                 finally:
-                    print("Unknown error, please try again")
+                    pass
             else:
                 print("Please enter one of the provided options")
         except ValueError:
