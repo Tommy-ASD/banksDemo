@@ -233,6 +233,11 @@ class asset:
         # let wallet approve other wallet to transfer assets
         # example: wallet 1 allows wallet 2 to transfer 1 unit
         # in solidity, this is done by a mapping an address to an asset, then mapping that to a number
+        # zip?
+        # possible solution:
+        # create new zip each time approval is updated
+        # store zip in array
+        # store zip array index in either asset or wallet
         approval = int(input("What wallet do you want to approve?"))
         amount = int(input("How much do you want to approve this for?"))
 
