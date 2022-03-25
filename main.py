@@ -146,7 +146,10 @@ class asset:
     def interact(self, msgSender):
         self.readData()
         # add more choices
-        cmd = int(input("What do you want to do?"))
+        try:
+            cmd = int(input("What do you want to do?"))
+        except ValueError:
+            self.interact(msgSender)
         match cmd:
             case 0:
                 pass
