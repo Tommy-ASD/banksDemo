@@ -20,10 +20,7 @@ class wallet:
         self.activated = False
 
     def login(self):
-        if self.activated:
-            self.loginPin()
-        else:
-            self.createPin()
+            self.loginPin() if self.activated else self.createPin()
 
     def createPin(self):
         print(
@@ -146,6 +143,7 @@ class asset:
     def interact(self, msgSender):
         self.readData()
         # add more choices
+        # optimize?
         try:
             cmd = int(input("What do you want to do?"))
         except ValueError:
