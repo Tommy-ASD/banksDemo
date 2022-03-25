@@ -163,7 +163,7 @@ class asset:
 
     def transferOwnership(self, msgSender):
         # make sure caller id is owner
-        if msgSender != self.owner:
+        if msgSender == self.owner:
             global wallets
             try:
                 self.newOwner = wallets[
