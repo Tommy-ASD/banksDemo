@@ -1,6 +1,3 @@
-from multiprocessing.sharedctypes import Value
-
-
 assets = []
 wallets = []
 amounts = []
@@ -37,16 +34,17 @@ class wallet:
             if len(str(self.newPin)) >= 4 and len(str(self.newPin)) <= 8:
                 print("Please confirm your pin")
                 self.pinConf = int(input())
-                if self.newPin == self.pinConf:
-                    self.pin = self.newPin
-                    print("Pin successfully created!")
-                    self.activated = True
-                    self.cmd()
-                elif self.newPin == 0:
-                    pass
-                else:
-                    print("Please input the same number")
-                    self.createPin()
+                match self.newPin:
+                    case self.pinConf:
+                        self.pin = self.newPin
+                        print("Pin successfully created!")
+                        self.activated = True
+                        self.cmd()
+                    case 0:
+                        pass
+                    case _:
+                        print("Please input the same number")
+                        self.createPin()
             else:
                 print("Not within 4 and 8 integers")
                 self.createPin()
@@ -72,20 +70,29 @@ class wallet:
             self.loginPin()
 
     def cmd(self):
-        print(wallets)
-        cmd = int(
-            input(
-                "What do you want to do?\n 1. Create asset\n 2. Change asset stats\nSimply press enter to log out\n"
+        try:
+            print(wallets)
+            cmd = int(
+                input(
+                    "What do you want to do?\n 1. Create asset\n 2. Change asset stats\nEnter 0 to log out\n"
+                )
             )
-        )
-        if cmd == 1:
-            # pass self.address in as owner
-            assets.append(asset(self.address))
-        elif cmd == 2:
-            # passing "self" argument as msgSender, to ensure only owner can make changes to OnlyOwner functions
-            assets[int(input("Input asset ID\n"))].interact(self.address)
-        elif cmd == None:
-            pass
+            match cmd:
+                case 0:
+                    pass
+                case 1:
+                    # pass self.address in as owner
+                    assets.append(asset(self.address))
+                case 2:
+                    # passing "self" argument as msgSender, to ensure only owner can make changes to OnlyOwner functions
+                    assets[int(input("Input asset ID\n"))].interact(self.address)
+                case _:
+                    print("You did not enter one of the provided options")
+                    self.cmd()
+
+        except ValueError:
+            print("You did not enter one of the provided options")
+            self.cmd()
 
 
 class asset:
