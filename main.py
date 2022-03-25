@@ -20,7 +20,7 @@ class wallet:
         self.activated = False
 
     def login(self):
-            self.loginPin() if self.activated else self.createPin()
+        self.loginPin() if self.activated else self.createPin()
 
     def createPin(self):
         print(
@@ -146,24 +146,24 @@ class asset:
         # optimize?
         try:
             cmd = int(input("What do you want to do?"))
+            match cmd:
+                case 0:
+                    pass
+                case 1:
+                    self.transfer(msgSender)
+                    self.interact(msgSender)
+                case 2:
+                    self.transferOwnership(msgSender)
+                    self.interact(msgSender)
+                case _:
+                    print("Unknown error")
+                    self.interact(msgSender)
         except ValueError:
             self.interact(msgSender)
-        match cmd:
-            case 0:
-                pass
-            case 1:
-                self.transfer(msgSender)
-                self.interact(msgSender)
-            case 2:
-                self.transferOwnership(msgSender)
-                self.interact(msgSender)
-            case _:
-                print("Unknown error")
-                self.interact(msgSender)
 
     def transferOwnership(self, msgSender):
         # make sure caller id is owner
-        if msgSender == self.owner:
+        if msgSender != self.owner:
             global wallets
             try:
                 self.newOwner = wallets[
@@ -216,7 +216,7 @@ class asset:
         cmd = int(
             input(
                 f"""What do you want to do with wallet {msgSender}'s '{self.name}, ({self.ticker})'?\n 
-    This wallet holds {self.holderAmounts[msgSender]} {self.ticker}.\n"""
+    This wallet holds {self.holderAmounts[msgSender]:,} {self.ticker}.\n"""
             )
         )
         match cmd:
