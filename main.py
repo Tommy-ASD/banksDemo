@@ -148,13 +148,17 @@ class asset:
         # add more choices
         cmd = int(input("What do you want to do?"))
         match cmd:
+            case 0:
+                pass
             case 1:
                 self.transfer(msgSender)
+                self.interact(msgSender)
             case 2:
                 self.transferOwnership(msgSender)
+                self.interact(msgSender)
             case _:
                 print("Unknown error")
-        self.interact(msgSender)
+                self.interact(msgSender)
 
     def transferOwnership(self, msgSender):
         # make sure caller id is owner
