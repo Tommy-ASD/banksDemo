@@ -1,0 +1,9 @@
+assets = []
+wallets = []
+amounts = []
+totalAmounts = []
+prices = []
+LPs = []
+LPprices = []
+assetsAmount = 0
+addressAmount = 0
