@@ -48,6 +48,8 @@ class wallet:
         except ValueError:
             print("You did not enter an integer")
             self.createPin()
+        # ok so i just found this and how have i not noticed before
+        # this starts 2 createPin instances every valueError (i think)
 
     def loginPin(self):
         print(
