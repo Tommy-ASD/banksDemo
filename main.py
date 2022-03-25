@@ -20,36 +20,36 @@ class wallet:
         self.activated = False
 
     def login(self):
-        self.loginPin() if self.activated else self.createPin()
-
-    def createPin(self):
-        print(
-            "Please choose a pin code for this account. The pin should be between 4 and 8 digits. If you no longer wish to choose this account, enter the number 0"
-        )
-        try:
-            self.newPin = int(input())
-            if len(str(self.newPin)) >= 4 and len(str(self.newPin)) <= 8:
-                print("Please confirm your pin")
-                self.pinConf = int(input())
-                match self.newPin:
-                    case self.pinConf:
-                        self.pin = self.newPin
-                        print("Pin successfully created!")
-                        self.activated = True
-                        self.cmd()
-                    case 0:
-                        pass
-                    case _:
-                        print("Please input the same number")
-                        self.createPin()
-            else:
-                print("Not within 4 and 8 integers")
+        if not self.activated:
+            print(
+                "Please choose a pin code for this account. The pin should be between 4 and 8 digits. If you no longer wish to choose this account, enter the number 0"
+            )
+            try:
+                self.newPin = int(input())
+                if len(str(self.newPin)) >= 4 and len(str(self.newPin)) <= 8:
+                    print("Please confirm your pin")
+                    self.pinConf = int(input())
+                    match self.newPin:
+                        case self.pinConf:
+                            self.pin = self.newPin
+                            print("Pin successfully created!")
+                            self.activated = True
+                            self.cmd()
+                        case 0:
+                            pass
+                        case _:
+                            print("Please input the same number")
+                            self.createPin()
+                else:
+                    print("Not within 4 and 8 integers")
+                    self.createPin()
+            except ValueError:
+                print("You did not enter an integer")
                 self.createPin()
-        except ValueError:
-            print("You did not enter an integer")
-            self.createPin()
-        # ok so i just found this and how have i not noticed before
-        # this starts 2 createPin instances every valueError (i think)
+            # ok so i just found this and how have i not noticed before
+            # this starts 2 createPin instances every valueError (i think)
+        else:
+            self.loginPin()
 
     def loginPin(self):
         print(
