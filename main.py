@@ -122,8 +122,12 @@ class asset:
         # store assets in wallets (not ideal)
         # how to store wallet address, asset id and asset amount in one?
         # i can only think of adding 2 arrays
+        self.holderDicts = []
         self.holders = []
         self.holderAmounts = []
+        for i in range(len(wallets)):
+            self.holderDicts.append({"holder": wallets[i], "amount": 0})
+        print(self.holderDicts)
         for i in range(len(wallets)):
             self.holders.append(wallets[i])
         for i in range(len(self.holders)):
